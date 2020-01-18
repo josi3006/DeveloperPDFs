@@ -1,0 +1,31 @@
+{
+  "name": "developerpdfs",
+  "version": "1.0.0",
+  "description": "An app to create developer bios, in pdf format, based on GitHub user name",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josi3006/DeveloperPDFs.git"
+  },
+  "keywords": [
+    "developer",
+    "pdf",
+    "bio"
+  ],
+  "author": "John Granville Sims",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.1",
+    "fs": "0.0.1-security",
+    "inquirer": "^7.0.3",
+    "puppeteer": "^2.0.0",
+    "util": "^0.12.1"
+  },
+  "bugs": {
+    "url": "https://github.com/josi3006/DeveloperPDFs/issues"
+  },
+  "homepage": "https://github.com/josi3006/DeveloperPDFs#readme"
+}
