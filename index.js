@@ -7,45 +7,39 @@ const puppeteer = require("puppeteer");
 const writeFileAsync = util.promisify(fs.writeFile);
 
 
-
-
-
-
-// Code below takes user name input 
-
+// Code below takes user name and favorite color input 
 
 async function getInput() {
     inquirer
-        .prompt({
-            message: "Enter your GitHub username:",
-            name: "username"
-        })
-        .then(function ({ username }) {
+        .prompt([
+            {
+                message: "Enter your GitHub username:",
+                name: "username"
+            },
+            {
+                message: "What is your favorite color?",
+                name: "favColor"
+            }
+        ])
+        .then(function ({ username, favColor }) {
             const queryURL = `https://api.github.com/users/${username}`;
             const queryURLstars = `https://api.github.com/users/${username}/starred`;
 
-            makeCall(queryURL, queryURLstars);
+            makeCall(queryURL, queryURLstars, favColor);
 
         })
-
-
 }
-
-
-
-
 
 
 // Code below makes call to GitHub
 
-function makeCall(queryURL, queryURLstars) {
+function makeCall(queryURL, queryURLstars, favColor) {
 
     let fileData = [];
 
     axios
         .get(queryURL)
         .then(function (res) {
-
 
             const userName = res.data.login;
             const fullName = res.data.name;
@@ -79,59 +73,44 @@ function makeCall(queryURL, queryURLstars) {
                     const noStarred = res.data.length;
                     console.log('# starred repos: ' + noStarred)
 
-                    const data = generateHTML(fileData, noStarred);
+                    const data = generateHTML(fileData, noStarred, favColor);
 
                     writeFile(data);
-
-
                 });
-
         });
-
-
-}  //Closed function
+}
 
 
 // Code below creates HTML page and renders data onto it
 
-function generateHTML(fileData, noStarred) {
+function generateHTML(fileData, noStarred, favColor) {
 
     const { picURL, fullName, location, userName, blogURL, noRepos, noFollowers, noFollowing, bio } = fileData;
 
     return `
                 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-
     <script src="index.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src='https://kit.fontawesome.com/22772263e9.js' crossorigin='anonymous'></script>
-
     <link rel="stylesheet" type="text/css" href="style.css">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
 </head>
-
 <body>
     <div class='container container-fluid justify-content-center'>
-
         <div class='row justify-content-center my-5'>                        
             <div class='col text-center' id='pic-box'>
                 <img class='rounded-circle img-thumbnail' style="height: 200px" src='${picURL}'>
             </div>
         </div>
-
-
-
         <div class='row'>
-            <div class='col-12 bluebox rounded'>
+            <div class='col-12 rounded' style='background-color: ${favColor}'>
                         <h5 class="display-2 text-center text-white" id='name'>Hi!</h5>
                         <h5 class='display-3 text-center text-white'>My name is ${fullName}</h5>
                         <h3 class='display-5 text-center text-white'>
@@ -144,78 +123,58 @@ function generateHTML(fileData, noStarred) {
                         </h3>
             </div>
         </div>
-
         <div class='row text-center text-white my-4 justify-content-center'>
         <div class='col-8'>
-        <h4>${bio}</h4>
+        <h4 style='color: ${favColor}'>${bio}</h4>
         </div>
     
         
         </div>
-
-
         <div class='row justify-content-center my-5'>
             <div class='col-4 mx-3'>
                 <div class='card'>
-                    <div class='card-body bluebox rounded'>
+                    <div class='card-body rounded' style='background-color: ${favColor}'>
                         <h3 class='card-title text-white text-center' id='repos'>Public Repositories</h3>
                         <h3 class='text-white text-center'>${noRepos}</h3>
                     </div>
                 </div>
             </div>
-
             <div class='col-4 mx-3'>
                 <div class='card'>
-                    <div class='card-body bluebox rounded'>
+                    <div class='card-body rounded' style='background-color: ${favColor}'>
                         <h3 class='card-title text-white text-center'>GitHub Stars</h3>
                         <h3 class='card-title text-white text-center'>${noStarred}</h3> 
                     </div>
                 </div>
             </div>
         </div>
-
-
-
         <div class='row justify-content-center mb-5'>
             <div class='col-4 mx-3'>
                 <div class='card'>
-                    <div class='card-body bluebox rounded'>
+                    <div class='card-body rounded' style='background-color: ${favColor}'>
                         <h3 class='card-title text-white text-center' id='followers'>Followers</h3>
                         <h3 class='text-white text-center'>${noFollowers}</h3>
                     </div>
                 </div>
             </div>
-
             <div class='col-4 mx-3'>
                 <div class='card'>
-                    <div class='card-body bluebox rounded'>
+                    <div class='card-body rounded' style='background-color: ${favColor}'>
                         <h3 class='card-title text-white text-center'>Following</h3>
                         <h3 class='card-title text-white text-center'>${noFollowing}</h3>
                     </div>
                 </div>
             </div>
         </div>
-
         
     </div>
-
-
     </div>
-
 </body>
-
-</html>
-`
-
-
+</html>`
 }
 
 
-
-
-
-
-
+// Code below writes HTML page to a pdf
 
 function writeFile(fileData) {
     writeFileAsync("profile.html", fileData)
@@ -227,10 +186,7 @@ function writeFile(fileData) {
 
             await browser.close();
         }
-
-
-
         ));
 }
 
-getInput();
+getInput();     // This function starts the whole thing
